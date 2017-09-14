@@ -25,6 +25,7 @@ def Logic(Account, Lookback):
         Today = Lookback.loc(0) # Current candle
         Yesterday = Lookback.loc(-1) # Previous candle
         print(Today)
+        print(Yesterday)
         if Today['close'] < Yesterday['close']:
             ExitPrice = Today['close']
             for Position in Account.Positions:
