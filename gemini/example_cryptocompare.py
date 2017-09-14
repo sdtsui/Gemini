@@ -6,8 +6,9 @@ from datetime import *
 
 pair = ['BTC','USD']    # Use ETH pricing data on the BTC market
 daysBack = 0       # Grab data starting X days ago
-daysData = 100       # From there collect X days of data
-TradingInterval = 4 # Run trading logic every X days
+daysData = 365       # From there collect X days of data
+TradingInterval = 1 # Run trading logic every X days
+FeesSpread = 0.0025+0.001 # Fees 0.25% + Bid/ask spread to account for http://data.bitcoinity.org/markets/spread/6m/USD?c=e&f=m20&st=log&t=l using Kraken 0.1% as worse case
 # Request data from cryptocompare
 data = cc.getPast(pair, daysBack, daysData)
 
@@ -21,7 +22,7 @@ def Logic(Account, Lookback):
         Lookback = helpers.Period(Lookback)
 
         Today = Lookback.loc(0) # Current candle
-        Yesterday = Lookback.loc(-40) # Previous candle
+        Yesterday = Lookback.loc(-30) # Previous candle
         print('from {} to {}'.format(Yesterday['date'],Today))
 
         if Today['close'] < Yesterday['close']:
@@ -31,7 +32,7 @@ def Logic(Account, Lookback):
                     Account.ClosePosition(Position, 1, ExitPrice)
 
         if Today['close'] > Yesterday['close']:
-            EntryPrice   = Today['close']
+            EntryPrice   = Today['close']+(Today['close']*FeesSpread)
             EntryCapital = Account.BuyingPower
             if EntryCapital > 0:
                 Account.EnterPosition('Long', EntryCapital, EntryPrice)
