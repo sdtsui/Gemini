@@ -9,7 +9,7 @@ class Run():
     def __init__(self, Data):
         self.Data = Data
 
-    def Start(self, InitialCapital, Logic, TradingInterval):
+    def Start(self, InitialCapital, Logic, TradingInterval, LookbackPeriod):
 
         self.Account = exchange.Account(InitialCapital)
 
@@ -24,7 +24,7 @@ class Run():
             # Execute trading logic
             Lookback = self.Data[0:Index+1]
             if TradingIntervalCounter == TradingInterval:
-                Logic(self.Account, Lookback)
+                Logic(self.Account, Lookback, LookbackPeriod)
                 TradingIntervalCounter = 0
             else:
                 TradingIntervalCounter += 1
@@ -59,9 +59,9 @@ class Run():
         print("Total Trades : {0}".format(Longs+Sells+Shorts+Covers))
         print("\n---------------------------------------")
 
-    def Chart(self, ShowTrades=False):
-        bokeh.plotting.output_file("chart.html", title="Equity Curve")
-        p = bokeh.plotting.figure(x_axis_type="datetime", plot_width=1000, plot_height=400, title="Equity Curve")
+    def Chart(self, Title, ShowTrades=False):
+        bokeh.plotting.output_file("chart.html", title=Title)
+        p = bokeh.plotting.figure(x_axis_type="datetime", plot_width=1000, plot_height=400, title=Title)
         p.grid.grid_line_alpha = 0.3
         p.xaxis.axis_label = 'Date'
         p.yaxis.axis_label = 'Equity'
