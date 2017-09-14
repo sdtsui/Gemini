@@ -1,19 +1,17 @@
 import pandas as pd
 import gemini
-import poloniex as px
+import cryptocompare as cc
 import helpers
+from datetime import *
 
-pair = "BTC_ETH"    # Use ETH pricing data on the BTC market
-period = 1800       # Use 1800 second candles
-daysBack = 30       # Grab data starting 30 days ago
-daysData = 3       # From there collect 60 days of data
+pair = ['BTC','USD']    # Use ETH pricing data on the BTC market
+startDate = datetime(2017,8,1)
+endDate = datetime(2017,9,1)
+# Request data from cryptocompare
+data = cc.getPast(pair, startDate, endDate)
 
-# Request data from Poloniex
-data = px.getPast(pair, period, daysBack, daysData)
-print(data)
 # Convert to Pandas dataframe with datetime format
 data = pd.DataFrame(data)
-
 data['date'] = pd.to_datetime(data['date'], unit='s')
 
 def Logic(Account, Lookback):
@@ -26,7 +24,7 @@ def Logic(Account, Lookback):
 
         Today = Lookback.loc(0) # Current candle
         Yesterday = Lookback.loc(-1) # Previous candle
-        # print(Today)
+        print(Today)
         if Today['close'] < Yesterday['close']:
             ExitPrice = Today['close']
             for Position in Account.Positions:
