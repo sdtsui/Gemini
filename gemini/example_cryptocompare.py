@@ -5,8 +5,9 @@ import helpers
 from datetime import *
 
 pair = ['BTC','USD']    # Use ETH pricing data on the BTC market
-daysBack = 30       # Grab data starting 30 days ago
-daysData = 60       # From there collect 60 days of data
+daysBack = 0       # Grab data starting X days ago
+daysData = 120       # From there collect X days of data
+TradingInterval = 4 # Run trading logic every X days
 # Request data from cryptocompare
 data = cc.getPast(pair, daysBack, daysData)
 
@@ -16,16 +17,13 @@ data['date'] = pd.to_datetime(data['time'], unit='s')
 
 def Logic(Account, Lookback):
     try:
-        # Process dataframe to collect signals
-        # Lookback = helpers.getSignals(Lookback)
-
         # Load into period class to simplify indexing
         Lookback = helpers.Period(Lookback)
 
         Today = Lookback.loc(0) # Current candle
-        Yesterday = Lookback.loc(-1) # Previous candle
-        print(Today)
-        print(Yesterday)
+        Yesterday = Lookback.loc(-10) # Previous candle
+        print('from {} to {}'.format(Yesterday['date'],Today))
+
         if Today['close'] < Yesterday['close']:
             ExitPrice = Today['close']
             for Position in Account.Positions:
@@ -33,20 +31,18 @@ def Logic(Account, Lookback):
                     Account.ClosePosition(Position, 1, ExitPrice)
 
         if Today['close'] > Yesterday['close']:
-            Risk         = 0.03
             EntryPrice   = Today['close']
             EntryCapital = Account.BuyingPower
             if EntryCapital >= 0:
                 Account.EnterPosition('Long', EntryCapital, EntryPrice)
-
     except ValueError:
         pass # Handles lookback errors in beginning of dataset
 
 # Load the data into a backtesting class called Run
 r = gemini.Run(data)
 
-# Start backtesting custom logic with 1000 (BTC) intital capital
-r.Start(1000, Logic)
+# Start backtesting custom logic with 1000 (BTC) intital capital and 2 day trading interval
+r.Start(1000, Logic, TradingInterval)
 
 r.Results()
 r.Chart(ShowTrades=False)
