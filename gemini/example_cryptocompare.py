@@ -6,7 +6,7 @@ from datetime import *
 
 pair = ['BTC','USD']    # Use ETH pricing data on the BTC market
 daysBack = 0       # Grab data starting X days ago
-daysData = 120       # From there collect X days of data
+daysData = 100       # From there collect X days of data
 TradingInterval = 4 # Run trading logic every X days
 # Request data from cryptocompare
 data = cc.getPast(pair, daysBack, daysData)
@@ -21,7 +21,7 @@ def Logic(Account, Lookback):
         Lookback = helpers.Period(Lookback)
 
         Today = Lookback.loc(0) # Current candle
-        Yesterday = Lookback.loc(-10) # Previous candle
+        Yesterday = Lookback.loc(-40) # Previous candle
         print('from {} to {}'.format(Yesterday['date'],Today))
 
         if Today['close'] < Yesterday['close']:
@@ -33,7 +33,7 @@ def Logic(Account, Lookback):
         if Today['close'] > Yesterday['close']:
             EntryPrice   = Today['close']
             EntryCapital = Account.BuyingPower
-            if EntryCapital >= 0:
+            if EntryCapital > 0:
                 Account.EnterPosition('Long', EntryCapital, EntryPrice)
     except ValueError:
         pass # Handles lookback errors in beginning of dataset

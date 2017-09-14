@@ -16,7 +16,7 @@ class Run():
         # Enter backtest ---------------------------------------------
         TradingIntervalCounter = TradingInterval
         for Index, Today in self.Data.iterrows():
-            print(Index)
+            # print(Index)
             # Update account variables
             self.Account.Date = Today['date']
             self.Account.Equity.append(self.Account.TotalValue(Today['close']))
