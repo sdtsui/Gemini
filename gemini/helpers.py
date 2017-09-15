@@ -10,5 +10,5 @@ class Period():
 
     def loc(self, i):
         if i > 0: raise ValueError("Error: Cannot look forward!")
-        if i <= -(len(self.Data)): raise ValueError("Error: Cannot look too far back!")     
+        if i <= -(len(self.Data)): raise ValueError("Error: Cannot look too far back!")
         return self.Data.iloc[i-1]
