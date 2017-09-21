@@ -1,3 +1,11 @@
 
 *.pyc
 gemini/chart.html
+chart.html
+
+.Python
+bin/
+include/
+lib/
+pip-selfcheck.json
+# requirements.txt
